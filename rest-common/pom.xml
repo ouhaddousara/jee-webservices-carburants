@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>ma.fstt.carburants</groupId>
+    <artifactId>carburants-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>carburants-rest-common</artifactId>
+  <packaging>jar</packaging>
+  <name>Carburants REST common (resources, filters, mappers)</name>
+  <description>
+    JAX-RS classes written against the standard API only, so the very same code is deployed in the
+    RESTEasy service and in the Jersey service. Only the Application class differs between them.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>ma.fstt.carburants</groupId>
+      <artifactId>carburants-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ma.fstt.carburants</groupId>
+      <artifactId>carburants-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+    </dependency>
+  </dependencies>
+</project>
