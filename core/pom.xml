@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>ma.fstt.carburants</groupId>
+    <artifactId>carburants-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>carburants-core</artifactId>
+  <packaging>jar</packaging>
+  <name>Carburants core (JPA entities, CDI services)</name>
+  <description>
+    Persistence and business services shared by the three web services. The JPA provider (Hibernate),
+    CDI (Weld) and JTA are provided by WildFly: nothing is embedded here except our own classes.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>ma.fstt.carburants</groupId>
+      <artifactId>carburants-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.transaction</groupId>
+      <artifactId>jakarta.transaction-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+  </dependencies>
+</project>

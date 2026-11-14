@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+
+  <!--
+    JTA persistence unit: the datasource is defined once in WildFly (config/wildfly-datasource.cli)
+    and shared by the three web applications. The schema is created by db/create-database.sql,
+    so Hibernate never touches it (hbm2ddl is off).
+  -->
+  <persistence-unit name="carburantsPU" transaction-type="JTA">
+    <jta-data-source>java:jboss/datasources/CarburantsDS</jta-data-source>
+    <class>ma.fstt.carburants.core.entity.Station</class>
+    <class>ma.fstt.carburants.core.entity.Carburant</class>
+    <class>ma.fstt.carburants.core.entity.HistoCarb</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+      <property name="hibernate.show_sql" value="false"/>
+    </properties>
+  </persistence-unit>
+</persistence>
