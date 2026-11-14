@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+  <display-name>Carburants SOAP service</display-name>
+
+  <!--
+    A JAX-WS POJO endpoint is published on WildFly by declaring its class as a servlet.
+    WSDL: http://localhost:8081/carburants-soap/CarburantsService?wsdl
+  -->
+  <servlet>
+    <servlet-name>CarburantsService</servlet-name>
+    <servlet-class>ma.fstt.carburants.soap.CarburantsSoapServiceImpl</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CarburantsService</servlet-name>
+    <url-pattern>/CarburantsService</url-pattern>
+  </servlet-mapping>
+
+  <session-config>
+    <session-timeout>5</session-timeout>
+  </session-config>
+</web-app>
