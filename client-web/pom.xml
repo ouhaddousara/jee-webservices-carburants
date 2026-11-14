@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>ma.fstt.carburants</groupId>
+    <artifactId>carburants-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>carburants-client-web</artifactId>
+  <packaging>war</packaging>
+  <name>Carburants web client (Servlets + JSP, SOAP client, jQuery page)</name>
+
+  <dependencies>
+    <!-- The shared contract: DTOs and the SOAP interface used to build the client proxy. -->
+    <dependency>
+      <groupId>ma.fstt.carburants</groupId>
+      <artifactId>carburants-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.ws</groupId>
+      <artifactId>jakarta.xml.ws-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.jws</groupId>
+      <artifactId>jakarta.jws-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <!-- Context root on WildFly: /client-web (same host and port as the services: no CORS needed) -->
+    <finalName>client-web</finalName>
+  </build>
+</project>

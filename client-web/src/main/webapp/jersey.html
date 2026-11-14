@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prix des carburants (jQuery + Jersey)</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/jquery-3.7.1.min.js"></script>
+  <script src="assets/jersey-page.js" defer></script>
+</head>
+<body>
+<main>
+  <h1>Prix des carburants : page jQuery appelant le service Jersey</h1>
+  <p class="muted">
+    Cette page appelle <code>POST /carburants-jersey/api/auth/login</code> puis
+    <code>GET /carburants-jersey/api/prix?station=...&amp;date=...</code>. Elle est servie par le même hôte et le même
+    port que le service : aucun réglage CORS n'est nécessaire.
+  </p>
+
+  <div id="message" class="msg info" role="status" hidden></div>
+
+  <form id="login-form" class="card" autocomplete="off">
+    <h2>1. Se connecter à l'API</h2>
+    <div class="grid">
+      <div><label for="username">Identifiant</label><input type="text" id="username" required maxlength="100"></div>
+      <div><label for="password">Mot de passe</label><input type="password" id="password" required maxlength="200"></div>
+      <div><button type="submit">Obtenir un jeton</button></div>
+    </div>
+    <p class="muted" id="token-state">Non connecté. Le jeton reste en mémoire, il n'est ni stocké ni affiché.</p>
+  </form>
+
+  <form id="prix-form" class="card">
+    <h2>2. Consulter les prix</h2>
+    <div class="grid">
+      <div><label for="station">Station (nom exact)</label><input type="text" id="station" required maxlength="100" placeholder="Station Malabata"></div>
+      <div><label for="date">Date</label><input type="date" id="date" required></div>
+      <div><button type="submit" id="prix-button" disabled>Consulter</button></div>
+    </div>
+  </form>
+
+  <section id="result" hidden>
+    <h2 id="result-title"></h2>
+    <table>
+      <thead><tr><th>Carburant</th><th class="num">Prix (MAD/L)</th><th>Prix fixé le</th></tr></thead>
+      <tbody id="result-body"></tbody>
+    </table>
+  </section>
+</main>
+</body>
+</html>
