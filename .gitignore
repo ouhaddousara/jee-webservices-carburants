@@ -1,0 +1,31 @@
+# Maven / build output
+target/
+*.class
+
+# IDEs
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+.factorypath
+
+# Local secrets and configuration (never commit)
+*.local.properties
+.env
+config/*.local.*
+
+# LaTeX build files (only the renamed final PDF is versioned)
+docs/rapport/*.aux
+docs/rapport/*.log
+docs/rapport/*.out
+docs/rapport/*.toc
+docs/rapport/*.fls
+docs/rapport/*.fdb_latexmk
+docs/rapport/*.synctex.gz
+docs/rapport/main.pdf
+
+# OS
+.DS_Store
+Thumbs.db

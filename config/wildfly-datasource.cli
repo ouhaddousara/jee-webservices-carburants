@@ -1,0 +1,36 @@
+# ----------------------------------------------------------------------------
+# WildFly CLI script: installs the MySQL driver as a module and registers the datasource
+# shared by the three services.
+#
+# Do not run it by hand: config\setup-datasource.ps1 defines the variables it needs and runs it.
+#   MYSQL_CONNECTOR_JAR        full path of mysql-connector-j-8.0.33.jar
+#   CARBURANTS_DB_PASSWORD     MySQL password of the "root" user
+#
+# About the password: depending on the CLI version, the value is either stored as the expression
+# ${env.CARBURANTS_DB_PASSWORD} (resolved by the server at run time) or resolved when this script
+# runs. Assume the worst case: it may end up in clear text in
+#   <WildFly>\standalone\configuration\standalone.xml
+# That file is local to this machine and is not part of the Git repository. Never commit it, share
+# it or show it in a screenshot.
+# ----------------------------------------------------------------------------
+
+# 1. Driver as a module (the documented way; it gets a stable name, unlike a deployed jar)
+module add --name=com.mysql --resources=${env.MYSQL_CONNECTOR_JAR} --dependencies=javax.api,jakarta.transaction.api
+/subsystem=datasources/jdbc-driver=mysql:add(driver-name=mysql, driver-module-name=com.mysql, driver-class-name=com.mysql.cj.jdbc.Driver)
+
+# 2. Datasource used by the persistence unit (java:jboss/datasources/CarburantsDS)
+data-source add \
+  --name=CarburantsDS \
+  --jndi-name=java:jboss/datasources/CarburantsDS \
+  --driver-name=mysql \
+  --connection-url=jdbc:mysql://localhost:3306/carburants?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC \
+  --user-name=root \
+  --password=${env.CARBURANTS_DB_PASSWORD} \
+  --min-pool-size=2 \
+  --max-pool-size=10 \
+  --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.mysql.MySQLValidConnectionChecker \
+  --validate-on-match=true \
+  --background-validation=false
+
+# 3. Proof that the connection works (the answer must contain "outcome" => "success")
+/subsystem=datasources/data-source=CarburantsDS:test-connection-in-pool
