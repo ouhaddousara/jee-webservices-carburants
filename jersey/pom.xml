@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>ma.fstt.carburants</groupId>
+    <artifactId>carburants-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>carburants-jersey</artifactId>
+  <packaging>war</packaging>
+  <name>Carburants Jersey service (Jersey 3.1 embedded in the WAR)</name>
+  <description>
+    Same API as the REST service, but served by Jersey embedded in the WAR. WildFly's own JAX-RS
+    subsystem (RESTEasy) is disabled for this deployment in WEB-INF/jboss-deployment-structure.xml.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>ma.fstt.carburants</groupId>
+      <artifactId>carburants-rest-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ma.fstt.carburants</groupId>
+      <artifactId>carburants-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>ma.fstt.carburants</groupId>
+      <artifactId>carburants-api</artifactId>
+    </dependency>
+
+    <!-- Jersey runtime, embedded (default compile scope: these jars end up in WEB-INF/lib). -->
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.inject</groupId>
+      <artifactId>jersey-hk2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-jackson</artifactId>
+    </dependency>
+    <!-- The JAX-RS API must travel with Jersey because RESTEasy's module is excluded for this WAR. -->
+    <dependency>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
+      <version>${jakarta.ws.rs.version}</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>carburants-jersey</finalName>
+  </build>
+</project>

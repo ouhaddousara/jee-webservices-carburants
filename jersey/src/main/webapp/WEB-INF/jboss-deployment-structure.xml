@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Disables WildFly's built-in JAX-RS support (RESTEasy) for THIS deployment only, so that Jersey,
+  embedded in WEB-INF/lib, is the only JAX-RS runtime and the two implementations never compete.
+-->
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+  <deployment>
+    <exclude-subsystems>
+      <subsystem name="jaxrs"/>
+    </exclude-subsystems>
+    <exclusions>
+      <module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
+      <module name="org.jboss.resteasy.resteasy-json-binding-provider"/>
+    </exclusions>
+  </deployment>
+</jboss-deployment-structure>
