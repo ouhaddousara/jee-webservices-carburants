@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>ma.fstt.carburants</groupId>
+    <artifactId>carburants-parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>carburants-api</artifactId>
+  <packaging>jar</packaging>
+  <name>Carburants API (contract, DTOs, security, pure logic)</name>
+  <description>
+    Shared contract used by the services AND the clients: DTOs, the SOAP interface,
+    business exceptions, JWT/Basic helpers and the "price in force" rule.
+    No JPA and no server dependency: everything here is testable without WildFly.
+  </description>
+
+  <dependencies>
+    <!-- Only annotations are needed at compile time; the implementation is provided by WildFly. -->
+    <dependency>
+      <groupId>jakarta.xml.ws</groupId>
+      <artifactId>jakarta.xml.ws-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.jws</groupId>
+      <artifactId>jakarta.jws-api</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Runs the pure-logic checks: mvn -q -pl api test-compile exec:java -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>ma.fstt.carburants.api.Verifications</mainClass>
+          <classpathScope>test</classpathScope>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
