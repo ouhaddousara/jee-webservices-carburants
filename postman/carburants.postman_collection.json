@@ -1,0 +1,996 @@
+{
+  "info": {
+    "name": "Atelier 4 - Carburants web services",
+    "description": "Tests of the three services. Fill apiPassword in the collection variables (the password you typed in start-wildfly.ps1) and keep it out of Git and out of screenshots. SOAP bodies are written from the Java contract; if one is refused, import the WSDL ({{soapUrl}}?wsdl) in Postman or SoapUI to generate the exact request.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "soapUrl",
+      "value": "http://localhost:8081/carburants-soap/CarburantsService",
+      "type": "default"
+    },
+    {
+      "key": "restUrl",
+      "value": "http://localhost:8081/carburants-rest/api",
+      "type": "default"
+    },
+    {
+      "key": "jerseyUrl",
+      "value": "http://localhost:8081/carburants-jersey/api",
+      "type": "default"
+    },
+    {
+      "key": "apiUser",
+      "value": "admin",
+      "type": "default"
+    },
+    {
+      "key": "apiPassword",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "default"
+    }
+  ],
+  "item": [
+    {
+      "name": "JAX-WS (SOAP)",
+      "item": [
+        {
+          "name": "S1. prixCarburants (nom_station, date)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{apiUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{apiPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://carburants.fstt.ma/soap\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <ns:prixCarburants>\n      <nom_station>Station Malabata</nom_station>\n      <date>2026-11-08</date>\n    </ns:prixCarburants>\n  </soapenv:Body>\n</soapenv:Envelope>"
+            },
+            "url": {
+              "raw": "{{soapUrl}}",
+              "host": [
+                "{{soapUrl}}"
+              ]
+            },
+            "description": "The shared method of the subject, on the JAX-WS service."
+          }
+        },
+        {
+          "name": "S2. listerStations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{apiUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{apiPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://carburants.fstt.ma/soap\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <ns:listerStations>\n    </ns:listerStations>\n  </soapenv:Body>\n</soapenv:Envelope>"
+            },
+            "url": {
+              "raw": "{{soapUrl}}",
+              "host": [
+                "{{soapUrl}}"
+              ]
+            },
+            "description": "Lists all stations."
+          }
+        },
+        {
+          "name": "S3. listerCarburants",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{apiUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{apiPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://carburants.fstt.ma/soap\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <ns:listerCarburants>\n    </ns:listerCarburants>\n  </soapenv:Body>\n</soapenv:Envelope>"
+            },
+            "url": {
+              "raw": "{{soapUrl}}",
+              "host": [
+                "{{soapUrl}}"
+              ]
+            },
+            "description": "Lists all fuels."
+          }
+        },
+        {
+          "name": "S4. creerStation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{apiUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{apiPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://carburants.fstt.ma/soap\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <ns:creerStation>\n      <station>\n        <nom>Station Test</nom>\n        <ville>Tanger</ville>\n        <adresse>Rue de test</adresse>\n      </station>\n    </ns:creerStation>\n  </soapenv:Body>\n</soapenv:Envelope>"
+            },
+            "url": {
+              "raw": "{{soapUrl}}",
+              "host": [
+                "{{soapUrl}}"
+              ]
+            },
+            "description": "Creates a station. A second call with the same name must give a conflict fault."
+          }
+        },
+        {
+          "name": "S5. creerCarburant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{apiUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{apiPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://carburants.fstt.ma/soap\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <ns:creerCarburant>\n      <carburant>\n        <nom>Gasoil 50</nom>\n        <description>Premium diesel</description>\n      </carburant>\n    </ns:creerCarburant>\n  </soapenv:Body>\n</soapenv:Envelope>"
+            },
+            "url": {
+              "raw": "{{soapUrl}}",
+              "host": [
+                "{{soapUrl}}"
+              ]
+            },
+            "description": "Creates a fuel."
+          }
+        },
+        {
+          "name": "S6. enregistrerPrix",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{apiUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{apiPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://carburants.fstt.ma/soap\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <ns:enregistrerPrix>\n      <prix>\n        <stationId>1</stationId>\n        <carburantId>1</carburantId>\n        <date>2026-11-10</date>\n        <prix>10.70</prix>\n      </prix>\n    </ns:enregistrerPrix>\n  </soapenv:Body>\n</soapenv:Envelope>"
+            },
+            "url": {
+              "raw": "{{soapUrl}}",
+              "host": [
+                "{{soapUrl}}"
+              ]
+            },
+            "description": "Records a price. Station id 1 and fuel id 1 exist after db/create-database.sql."
+          }
+        },
+        {
+          "name": "S7. historiqueStation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{apiUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{apiPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://carburants.fstt.ma/soap\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <ns:historiqueStation>\n      <stationId>1</stationId>\n    </ns:historiqueStation>\n  </soapenv:Body>\n</soapenv:Envelope>"
+            },
+            "url": {
+              "raw": "{{soapUrl}}",
+              "host": [
+                "{{soapUrl}}"
+              ]
+            },
+            "description": "Price history of station 1."
+          }
+        },
+        {
+          "name": "S8. supprimerStation (refused when prices exist)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              }
+            ],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "{{apiUser}}",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "{{apiPassword}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns=\"http://carburants.fstt.ma/soap\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <ns:supprimerStation>\n      <id>1</id>\n    </ns:supprimerStation>\n  </soapenv:Body>\n</soapenv:Envelope>"
+            },
+            "url": {
+              "raw": "{{soapUrl}}",
+              "host": [
+                "{{soapUrl}}"
+              ]
+            },
+            "description": "Station 1 has prices: the service must answer with a fault, not delete anything."
+          }
+        }
+      ]
+    },
+    {
+      "name": "JAX-RS (RESTEasy)",
+      "item": [
+        {
+          "name": "1. Login (stores the token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('login returns 200', function () { pm.response.to.have.status(200); });",
+                  "var body = pm.response.json();",
+                  "pm.test('a token is returned', function () { pm.expect(body.token).to.be.a('string'); });",
+                  "pm.collectionVariables.set('token', body.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{apiUser}}\",\n  \"password\": \"{{apiPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{restUrl}}/auth/login",
+              "host": [
+                "{{restUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Prices on a day of change (2026-11-08)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json();pm.test('two fuels are returned', function () { pm.expect(b.prix.length).to.eql(2); });pm.test('new Gasoil price', function () { pm.expect(Number(b.prix[0].prix)).to.eql(10.62); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{restUrl}}/prix?station=Station Malabata&date=2026-11-08",
+              "host": [
+                "{{restUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Malabata"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-11-08"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Prices between two changes (2026-11-05)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json(); pm.test('older price still in force', function () { pm.expect(Number(b.prix[0].prix)).to.eql(10.45); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{restUrl}}/prix?station=Station Malabata&date=2026-11-05",
+              "host": [
+                "{{restUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Malabata"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-11-05"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. No price yet (2026-10-01): explicit message",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json(); pm.test('empty list and message', function () { pm.expect(b.prix.length).to.eql(0); pm.expect(b.message).to.be.a('string'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{restUrl}}/prix?station=Station Malabata&date=2026-10-01",
+              "host": [
+                "{{restUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Malabata"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-10-01"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Unknown station (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{restUrl}}/prix?station=Station Fantome&date=2026-11-08",
+              "host": [
+                "{{restUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Fantome"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-11-08"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "6. Invalid date (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{restUrl}}/prix?station=Station Malabata&date=2026-02-30",
+              "host": [
+                "{{restUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Malabata"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-02-30"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7. Without token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{restUrl}}/prix?station=Station Malabata&date=2026-11-08",
+              "host": [
+                "{{restUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Malabata"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-11-08"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jersey",
+      "item": [
+        {
+          "name": "1. Login (stores the token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('login returns 200', function () { pm.response.to.have.status(200); });",
+                  "var body = pm.response.json();",
+                  "pm.test('a token is returned', function () { pm.expect(body.token).to.be.a('string'); });",
+                  "pm.collectionVariables.set('token', body.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{apiUser}}\",\n  \"password\": \"{{apiPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{jerseyUrl}}/auth/login",
+              "host": [
+                "{{jerseyUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. Prices on a day of change (2026-11-08)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json();pm.test('two fuels are returned', function () { pm.expect(b.prix.length).to.eql(2); });pm.test('new Gasoil price', function () { pm.expect(Number(b.prix[0].prix)).to.eql(10.62); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{jerseyUrl}}/prix?station=Station Malabata&date=2026-11-08",
+              "host": [
+                "{{jerseyUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Malabata"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-11-08"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. Prices between two changes (2026-11-05)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json(); pm.test('older price still in force', function () { pm.expect(Number(b.prix[0].prix)).to.eql(10.45); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{jerseyUrl}}/prix?station=Station Malabata&date=2026-11-05",
+              "host": [
+                "{{jerseyUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Malabata"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-11-05"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. No price yet (2026-10-01): explicit message",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', function () { pm.response.to.have.status(200); });",
+                  "var b = pm.response.json(); pm.test('empty list and message', function () { pm.expect(b.prix.length).to.eql(0); pm.expect(b.message).to.be.a('string'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{jerseyUrl}}/prix?station=Station Malabata&date=2026-10-01",
+              "host": [
+                "{{jerseyUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Malabata"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-10-01"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. Unknown station (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{jerseyUrl}}/prix?station=Station Fantome&date=2026-11-08",
+              "host": [
+                "{{jerseyUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Fantome"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-11-08"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "6. Invalid date (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{jerseyUrl}}/prix?station=Station Malabata&date=2026-02-30",
+              "host": [
+                "{{jerseyUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Malabata"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-02-30"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "7. Without token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{jerseyUrl}}/prix?station=Station Malabata&date=2026-11-08",
+              "host": [
+                "{{jerseyUrl}}"
+              ],
+              "path": [
+                "prix"
+              ],
+              "query": [
+                {
+                  "key": "station",
+                  "value": "Station Malabata"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-11-08"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
