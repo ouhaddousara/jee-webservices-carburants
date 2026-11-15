@@ -1,0 +1,790 @@
+% ============================================================================
+% Atelier 4 JEE - Web services JAX-WS / JAX-RS / Jersey : gestion des carburants
+% Compilation :  latexmk -pdf -interaction=nonstopmode main.tex
+% Les captures sont lues dans figures/ ; une capture absente donne un cadre
+% "Capture a inserer" au lieu d'une erreur.
+% ============================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[a4paper,margin=2.3cm]{geometry}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+
+% ---- palette ---------------------------------------------------------------
+\definecolor{teal}{HTML}{0F6E66}
+\definecolor{saffron}{HTML}{E9A820}
+\definecolor{ink}{HTML}{12201E}
+\definecolor{paper}{HTML}{F4F7F6}
+
+\color{ink}
+
+% ---- titres ----------------------------------------------------------------
+\titleformat{\section}{\Large\bfseries\color{teal}}{\thesection}{0.6em}{}[\vspace{-0.4em}{\color{saffron}\titlerule[1.2pt]}]
+\titleformat{\subsection}{\large\bfseries\color{teal}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{ink}}{\thesubsubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.6em}{0.9em}
+\titlespacing*{\subsection}{0pt}{1.2em}{0.5em}
+
+% ---- en-tetes --------------------------------------------------------------
+\setlength{\headheight}{22pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{teal}Atelier 4 --- Web services carburants}
+\fancyhead[R]{\small\color{teal}FST Tanger --- LSI}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{saffron}\leaders\hrule height \headrulewidth\hfill}}
+
+\setlength{\parindent}{0pt}
+\emergencystretch=3em
+\setlength{\parskip}{0.55em}
+\setlist{itemsep=0.15em,topsep=0.3em}
+\captionsetup{font=small,labelfont={bf,color=teal},labelsep=period}
+
+% ---- code ------------------------------------------------------------------
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{paper},
+  frame=single,
+  rulecolor=\color{teal!40},
+  breaklines=true,
+  breakatwhitespace=false,
+  showstringspaces=false,
+  keywordstyle=\color{teal}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{saffron!70!black},
+  columns=fullflexible,
+  keepspaces=true,
+  xleftmargin=0.5em,
+  xrightmargin=0.5em,
+  aboveskip=0.8em,
+  belowskip=0.6em
+}
+\lstdefinelanguage{JavaX}{
+  language=Java,
+  morekeywords={record,var}
+}
+\lstdefinelanguage{JS}{
+  morekeywords={function,var,return,if,else,null,true,false},
+  sensitive=true,
+  morecomment=[l]{//},
+  morestring=[b]',
+  morestring=[b]"
+}
+\lstdefinelanguage{SQLX}{
+  language=SQL,
+  morekeywords={CONSTRAINT,UNIQUE,CHECK,RESTRICT,AUTO_INCREMENT,ENGINE}
+}
+
+% ---- figure avec cadre de repli -------------------------------------------
+% \fig{fichier.png}{legende}{etiquette}
+\newcommand{\fig}[3]{%
+  \begin{figure}[H]
+    \centering
+    \IfFileExists{figures/#1}{%
+      \fbox{\includegraphics[width=0.88\linewidth,height=0.34\textheight,keepaspectratio]{figures/#1}}%
+    }{%
+      \fcolorbox{saffron}{paper}{\parbox{0.8\linewidth}{\centering\vspace{2.2em}Capture à insérer : \texttt{#1}\vspace{2.2em}}}%
+    }
+    \caption{#2}\label{#3}
+  \end{figure}%
+}
+
+% ---- encadre "point de vigilance" -----------------------------------------
+\newtcolorbox{vigilance}[1][]{
+  colback=saffron!12, colframe=saffron, boxrule=0.8pt, arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,
+  title={#1}, fonttitle=\bfseries\small, coltitle=ink, colbacktitle=saffron!35
+}
+\newtcolorbox{decision}[1][]{
+  colback=teal!6, colframe=teal, boxrule=0.8pt, arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,
+  title={#1}, fonttitle=\bfseries\small, coltitle=white, colbacktitle=teal
+}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\begin{document}
+
+% ============================================================================
+%  PAGE DE GARDE
+% ============================================================================
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[teal] (current page.north west) rectangle ($(current page.north east)+(0,-5.2cm)$);
+    \fill[saffron] ($(current page.north west)+(0,-5.2cm)$) rectangle ($(current page.north east)+(0,-5.45cm)$);
+  \end{tikzpicture}
+  \vspace*{0.6cm}
+  {\color{white}\Large Faculté des Sciences et Techniques de Tanger\par}
+  {\color{white}\large Génie Logiciel et Systèmes Intelligents (LSI) --- Programmation JEE\par}
+  \vspace{3.6cm}
+  {\color{teal}\fontsize{28}{34}\selectfont\bfseries Atelier 4\par}
+  \vspace{0.4cm}
+  {\color{ink}\fontsize{20}{26}\selectfont Web services JAX-WS, JAX-RS et Jersey\par}
+  {\color{ink}\fontsize{20}{26}\selectfont pour la gestion des carburants\par}
+  \vspace{0.8cm}
+  {\color{saffron}\rule{6cm}{2pt}\par}
+  \vspace{0.8cm}
+  {\large Un service SOAP, deux services REST, quatre clients,\par
+   une sécurité par jeton JWT, le tout sur WildFly.\par}
+  \vfill
+  \begin{tabular}{@{}ll@{}}
+    \textbf{Réalisé par} & Sara Ouhaddou\\[0.3em]
+    \textbf{Encadrant} & Pr.\ Lotfi Elaachak\\[0.3em]
+    \textbf{Filière} & LSI, 2\textsuperscript{e} année\\[0.3em]
+    \textbf{Dépôt} & \texttt{github.com/ouhaddousara/jee-webservices-carburants}\\[0.3em]
+    \textbf{Date} & \today
+  \end{tabular}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+% ============================================================================
+\section{Introduction et périmètre}
+% ============================================================================
+Les ateliers 2 et 3 portaient sur une application web complète (MVC2 puis JSF, avec JPA). Cet atelier change de perspective : au lieu d'afficher des pages, l'application \emph{expose des services} que d'autres programmes peuvent appeler. Le sujet porte sur des stations de carburant, les carburants qu'elles vendent et l'historique de leurs prix.
+
+Le sujet demande trois services, quatre clients, des tests, une sécurisation et un rapport. Le tableau~\ref{tab:perimetre} fait la correspondance entre chaque exigence et ce qui a été livré.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}p{5.6cm}p{6.2cm}p{3cm}@{}}
+\toprule
+\textbf{Exigence du sujet} & \textbf{Livré} & \textbf{Module} \\
+\midrule
+Schéma MySQL et persistance JPA & Script SQL, 3 entités JPA & \code{db}, \code{core}\\
+Service JAX-WS : CRUD station, CRUD carburant, prix journaliers & 15 opérations SOAP (14 de gestion et la méthode partagée) & \code{soap}\\
+Méthode « prix des carburants (nom\_station, date) » en JAX-RS & \code{GET /carburants-rest/api/prix} & \code{rest}\\
+La même méthode en Jersey & \code{GET /carburants-jersey/api/prix} & \code{jersey}\\
+Tests avec Postman & Collection importable & \code{postman}\\
+Client 1 : Servlets + JSP appelant le JAX-WS & Application web, toutes les opérations & \code{client-web}\\
+Client 2 : prix selon la station et la date (JAX-WS) & Page \emph{Consultation} & \code{client-web}\\
+Client 3 : classe Java avec \code{main} appelant le JAX-RS & \code{PrixRestClient} & \code{client-java}\\
+Client 4 : page jQuery appelant Jersey & \code{jersey.html} & \code{client-web}\\
+Sécurisation : authentification, JWT, OAuth~2.0 & Basic (SOAP), JWT (REST et Jersey), OAuth~2.0 expliqué & section~\ref{sec:securite}\\
+\bottomrule
+\end{tabular}
+\caption{Périmètre : exigences du sujet et réalisation.}
+\label{tab:perimetre}
+\end{table}
+
+La méthode que les trois services ont en commun est celle du sujet : \emph{donner le prix des carburants d'une station (\code{nom\_station}) à une date}. Elle sert de fil conducteur : on la retrouve en SOAP, en REST et en Jersey, et dans chaque client.
+
+\subsection*{Ce que ce rapport affirme, et sur quelle base}
+Chaque résultat annoncé dans ce rapport vient d'une exécution réelle (capture ou test automatique). Quand une affirmation vient seulement de la lecture du code, elle est signalée comme telle. La section~\ref{sec:limites} récapitule ce qui n'a pas été éprouvé.
+
+% ============================================================================
+\section{Conception}
+% ============================================================================
+\subsection{Modèle du sujet}
+Le sujet décrit deux classes liées par une association de type plusieurs-à-plusieurs, \code{Station} et \code{Carburant}, et une \emph{classe d'association} \code{HistoCarb} qui porte une date et un prix. Une station vend plusieurs carburants, un carburant est vendu dans plusieurs stations, et le prix change au fil du temps.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  cls/.style={draw=teal,thick,fill=paper,rounded corners=2pt,minimum width=4.2cm,align=left,inner sep=5pt,font=\small},
+  lbl/.style={font=\scriptsize,color=ink}]
+  \node[cls] (st) {\textbf{\color{teal}Station}\\[1pt]\rule{3.7cm}{0.4pt}\\ nom\\ ville\\ adresse};
+  \node[cls,right=3.6cm of st] (ca) {\textbf{\color{teal}Carburant}\\[1pt]\rule{3.7cm}{0.4pt}\\ nom\\ description};
+  \node[cls,draw=saffron] (hc) at ($(st)!0.5!(ca)+(0,-2.8cm)$) {\textbf{\color{saffron!60!black}HistoCarb}\\[1pt]\rule{3.7cm}{0.4pt}\\ date\\ prix};
+  \draw[thick,teal] (st) -- node[above,lbl]{0..*\quad vend\quad 0..*} (ca);
+  \draw[dashed,saffron!80!black,thick] ($(st.east)!0.5!(ca.west)$) -- (hc.north);
+\end{tikzpicture}
+\caption{Diagramme de classes du sujet. La classe d'association \code{HistoCarb} (pointillés) porte la date et le prix.}
+\label{fig:classes}
+\end{figure}
+
+\subsection{De la classe d'association à une table}
+Une association plusieurs-à-plusieurs \emph{sans} attribut se traduit par une simple table de jointure. Ici, l'association porte une date et un prix : la table de jointure doit donc contenir ces deux colonnes en plus des deux clés étrangères. \code{HistoCarb} devient ainsi une \textbf{entité à part entière}, avec sa propre clé.
+
+\begin{decision}[Décision : trois tables]
+\small
+\begin{lstlisting}[language=SQLX,backgroundcolor={},frame=none,xleftmargin=0pt,xrightmargin=0pt]
+station(id, nom UNIQUE, ville, adresse)
+carburant(id, nom UNIQUE, description)
+histo_carb(id, station_id -> station, carburant_id -> carburant, date_prix, prix)
+   UNIQUE (station_id, carburant_id, date_prix)   CHECK (prix >= 0)   ON DELETE RESTRICT
+\end{lstlisting}
+\end{decision}
+
+Trois contraintes traduisent des règles du sujet ou du bon sens :
+\begin{itemize}
+  \item \code{UNIQUE (station\_id, carburant\_id, date\_prix)} : un seul prix par jour, par carburant et par station (c'est le mot « journalier » du sujet). La base le garantit, même si deux clients écrivent en même temps.
+  \item \code{CHECK (prix >= 0)} : un prix négatif est refusé par la base, pas seulement par l'interface.
+  \item \code{ON DELETE RESTRICT} : une station ou un carburant qui a un historique ne peut pas être supprimé. La suppression est \emph{refusée avec un message}, jamais effectuée en silence, ce qui évite de perdre l'historique des prix.
+\end{itemize}
+
+\fig{01-base-tables.png}{Les trois tables dans MySQL après l'exécution de \code{db/create-database.sql}.}{fig:tables}
+
+Le script fournit trois stations de Tanger, deux carburants et huit lignes de prix (tableau~\ref{tab:donnees}). Les prix de la station Malabata changent deux fois, ce qui permet de tester la règle du prix « en vigueur ».
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}llrr@{}}
+\toprule
+\textbf{Station} & \textbf{Date} & \textbf{Gasoil} & \textbf{Sans plomb 95}\\
+\midrule
+Station Malabata & 2026-11-01 & 10,45 & 11,60\\
+Station Malabata & 2026-11-08 & 10,62 & 11,75\\
+Station Boukhalef & 2026-11-01 & 10,40 & 11,55\\
+Station Centre-Ville & 2026-11-05 & 10,50 & 11,70\\
+\bottomrule
+\end{tabular}
+\caption{Données de départ (prix en MAD par litre).}
+\label{tab:donnees}
+\end{table}
+
+\subsection{Règle du « prix à une date »}
+Le sujet demande le prix d'une station \emph{à une date}, mais l'historique ne contient un prix qu'aux dates de changement. Que répondre pour une date intermédiaire ?
+
+\begin{decision}[Décision : le prix en vigueur]
+Pour chaque carburant, on prend la ligne la plus récente dont la date est \textbf{inférieure ou égale} à la date demandée. Un prix reste valable jusqu'au suivant. S'il n'existe rien avant la date, la réponse est une liste vide accompagnée d'un message explicite : ce n'est pas une erreur. Une station inconnue, en revanche, est une vraie erreur (404).
+\end{decision}
+
+Avec les données du tableau~\ref{tab:donnees}, le comportement attendu pour la station Malabata est le suivant :
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Date demandée} & \textbf{Réponse} & \textbf{Pourquoi}\\
+\midrule
+2026-11-08 & Gasoil 10,62 ; Sans plomb 95 11,75 & le prix du jour même est utilisé\\
+2026-11-05 & Gasoil 10,45 ; Sans plomb 95 11,60 & le prix du 1\ier{} novembre est encore en vigueur\\
+2026-10-01 & liste vide et message & aucun prix avant cette date\\
+\bottomrule
+\end{tabular}
+\caption{Prix en vigueur selon la date (station Malabata).}
+\label{tab:vigueur}
+\end{table}
+
+La règle est écrite dans une classe sans dépendance, \code{PriceResolver}, afin de pouvoir la tester sans base de données (section~\ref{sec:tests}) :
+
+\begin{lstlisting}[language=JavaX]
+for (Entry e : entries) {
+    if (e.getDate().isAfter(at)) {
+        continue;                       // a price from the future is ignored
+    }
+    Entry current = best.get(e.getCarburant());
+    if (current == null || e.getDate().isAfter(current.getDate())) {
+        best.put(e.getCarburant(), e);  // keep the most recent one per fuel
+    }
+}
+\end{lstlisting}
+
+La méthode renvoie le prix de \emph{chaque} carburant qui a un historique pour la station. Avec les données de départ, cela fait deux carburants ; en ajouter un troisième ne demande aucune modification.
+
+% ============================================================================
+\section{Architecture et environnement}
+% ============================================================================
+\subsection{Un dépôt, plusieurs modules Maven}
+Les trois services partagent la même logique (entités, règles, sécurité). Plutôt que de copier du code, le projet est un \textbf{Maven multi-modules} : chaque module a un rôle précis et les dépendances vont toujours dans le même sens.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lp{9.2cm}@{}}
+\toprule
+\textbf{Module} & \textbf{Rôle}\\
+\midrule
+\code{api} & contrat (DTO, interface SOAP), JWT, hachage des mots de passe, règles métier sans serveur\\
+\code{core} & entités JPA, services CDI, configuration des secrets\\
+\code{rest-common} & ressources JAX-RS, filtres et gestionnaires d'erreurs, \emph{écrits une seule fois}\\
+\code{soap}, \code{rest}, \code{jersey} & les trois WAR de services\\
+\code{client-web}, \code{client-java} & les clients\\
+\bottomrule
+\end{tabular}
+\caption{Modules du projet.}
+\end{table}
+
+\subsection{Pourquoi WildFly, et quelle version}\label{sec:wildfly}
+Le sujet demande WildFly. Il fournit déjà JAX-WS, JAX-RS (avec RESTEasy), CDI et JPA (avec Hibernate) : on n'embarque donc pas ces bibliothèques dans les WAR, ce qui supprime la plupart des conflits de versions rencontrés avec Tomcat.
+
+\begin{decision}[Décision : WildFly 41.0.1.Final, distribution « EE10 »]
+Depuis WildFly~40, la distribution standard est en Jakarta EE~11. Le projet est écrit pour Jakarta EE~10 (APIs 10, Jersey~3.1). La variante \emph{EE10 Distribution} de WildFly~41 donne un serveur récent \textbf{sans migrer le code}. Cette variante est temporaire (elle n'existera plus à partir de WildFly~42) : c'est sans importance pour un atelier, mais un projet durable devrait migrer vers EE~11.
+\end{decision}
+
+L'environnement est : JDK~17, Maven, MySQL~8, WildFly avec un décalage de port de~1 (HTTP sur 8081, administration sur 9991) pour ne pas entrer en conflit avec Tomcat des ateliers précédents. Tout le code utilise l'espace de noms \code{jakarta.*}.
+
+\fig{03-build-maven.png}{Construction du projet : \code{BUILD SUCCESS} pour tous les modules.}{fig:build}
+
+\subsection{Source de données et déploiement}
+La connexion à MySQL est définie \emph{une seule fois} dans WildFly (source de données \path{java:jboss/datasources/CarburantsDS}, pilote installé comme module) puis partagée par les trois services. Hibernate n'a pas le droit de modifier le schéma : c'est le script SQL qui le crée.
+
+\fig{04-datasource.png}{La source de données \code{CarburantsDS} est enregistrée et le test de connexion réussit.}{fig:datasource}
+
+\fig{05-wildfly-deploiement.png}{Déploiement des applications dans WildFly.}{fig:deploiement}
+
+\subsection{Les secrets ne sont jamais dans le dépôt}
+Le mot de passe de la base, celui de l'API et la clé de signature des jetons sont saisis à l'invite du script \code{start-wildfly.ps1} et n'existent que dans l'environnement du processus serveur. Le code ne contient que le \emph{nom} des variables (\code{CARBURANTS\_JWT\_SECRET}, \code{CARBURANTS\_API\_PASSWORD}), jamais leur valeur. Un contrôle par recherche de motifs sur les sources a été fait avant de publier le dépôt.
+
+% ============================================================================
+\section{Persistance JPA}
+% ============================================================================
+Les trois entités sont dans le module \code{core}. \code{HistoCarb} illustre la traduction de la classe d'association : deux relations \code{@ManyToOne} obligatoires, la date et le prix.
+
+\begin{lstlisting}[language=JavaX]
+@Entity
+@Table(name = "histo_carb")
+public class HistoCarb {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "station_id", nullable = false)
+    private Station station;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "carburant_id", nullable = false)
+    private Carburant carburant;
+
+    @Column(name = "date_prix", nullable = false)
+    private LocalDate datePrix;
+
+    @Column(name = "prix", nullable = false, precision = 8, scale = 2)
+    private BigDecimal prix;
+    ...
+}
+\end{lstlisting}
+
+Deux choix méritent d'être expliqués. Le prix est un \code{BigDecimal} (jamais un \code{double}) : un prix en argent ne doit pas subir d'erreur d'arrondi binaire. Et \code{HistoCarb} a une clé de substitution (\code{id}) : un client SOAP ou REST doit pouvoir désigner un prix précis pour le modifier ou le supprimer, alors que la clé \emph{métier} reste le triplet station, carburant, date.
+
+Les services (\code{StationService}, \code{CarburantService}, \code{PrixService}) sont des beans CDI \code{@ApplicationScoped} et \code{@Transactional} : les transactions sont gérées par WildFly. Les classes SOAP et REST ne font pas d'injection directe : elles demandent le bean via un petit \code{ServiceLocator} (\code{CDI.current()}), ce qui se comporte de la même façon sous les trois moteurs (JBossWS, RESTEasy et Jersey, qui a sa propre injection).
+
+% ============================================================================
+\section{Le service JAX-WS (SOAP)}
+% ============================================================================
+\subsection{Contrat}
+Le service est décrit par une interface (SEI) placée dans le module \code{api}. Ainsi, le client web construit son proxy à partir du \emph{même} contrat que celui que le serveur publie. L'espace de noms est fixé explicitement, pour que le WSDL ne change pas si un paquet est renommé.
+
+\begin{lstlisting}[language=JavaX]
+@WebService(name = "CarburantsSoap", targetNamespace = "http://carburants.fstt.ma/soap")
+public interface CarburantsSoapService {
+    @WebMethod(operationName = "listerStations")
+    List<StationDto> listerStations();
+    ...
+    @WebMethod(operationName = "enregistrerPrix")
+    HistoCarbDto enregistrerPrix(@WebParam(name = "prix") HistoCarbDto prix);
+    ...
+    @WebMethod(operationName = "prixCarburants")
+    PrixStationDto prixCarburants(@WebParam(name = "nom_station") String nomStation,
+                                  @WebParam(name = "date") String date);
+}
+\end{lstlisting}
+
+Les 15 opérations se répartissent ainsi : cinq pour les stations (lister, trouver, créer, modifier, supprimer), cinq pour les carburants (mêmes opérations), quatre pour les prix (enregistrer, modifier, supprimer, historique d'une station), et la méthode partagée \code{prixCarburants}.
+
+\subsection{Publication sous WildFly}
+Une classe POJO annotée \code{@WebService} est publiée sous WildFly en la déclarant comme servlet dans le \code{web.xml}, ce qui donne l'adresse \code{/carburants-soap/CarburantsService}. Le WSDL est servi par la même adresse avec \code{?wsdl} et reste public (un client doit pouvoir lire le contrat avant de s'authentifier).
+
+\fig{06-wsdl.png}{Le WSDL publié à l'adresse \protect\path{http://localhost:8081/carburants-soap/CarburantsService?wsdl}.}{fig:wsdl}
+
+\subsection{Appels et erreurs métier}
+Les appels SOAP ont été envoyés depuis Postman (requêtes S1 à S8 de la collection). La figure~\ref{fig:soapprix} montre la méthode partagée, avec le nom de la station et la date.
+
+\fig{07-soap-prix.png}{Appel SOAP \code{prixCarburants} (nom de la station, date) et réponse.}{fig:soapprix}
+
+Les règles métier sont défendues par le service, pas seulement par l'interface. Une station dont le nom existe déjà est refusée (doublon) ; une station qui a un historique ne peut pas être supprimée. Dans les deux cas, le service répond par une \emph{SOAP Fault} lisible, sans trace Java ni requête SQL.
+
+\fig{09a-soap-doublon.png}{Création d'une station existante : SOAP Fault de doublon.}{fig:soapdoublon}
+\fig{09b-soap-suppression-refusee.png}{Suppression d'une station qui a un historique de prix : refusée avec un message.}{fig:soapsuppr}
+
+% ============================================================================
+\section{Les services JAX-RS (RESTEasy) et Jersey}
+% ============================================================================
+\subsection{Deux services, deux moteurs}
+Le sujet demande \emph{deux} services REST : un « JAX-RS » et un « Jersey ». Or Jersey \emph{est} une implémentation de JAX-RS. Pour que les deux services soient réellement différents, ils tournent sur deux moteurs distincts :
+
+\begin{itemize}
+  \item \code{carburants-rest} est servi par \textbf{RESTEasy}, l'implémentation intégrée à WildFly : aucune bibliothèque REST n'est embarquée dans le WAR ;
+  \item \code{carburants-jersey} embarque \textbf{Jersey~3.1.5} dans son WAR et \emph{désactive} le sous-système JAX-RS de WildFly pour ce déploiement, afin que les deux moteurs ne se disputent pas les requêtes.
+\end{itemize}
+
+Les ressources (\code{AuthResource}, \code{PrixResource}), le filtre JWT et les gestionnaires d'erreurs sont écrits \textbf{une seule fois} dans \code{rest-common}, avec l'API standard uniquement. Seule la classe d'entrée change entre les deux services :
+
+\begin{lstlisting}[language=JavaX]
+// RESTEasy (rest) : WildFly detects the class and serves it
+@ApplicationPath("/api")
+public class RestApplication extends Application {
+    @Override public Set<Class<?>> getClasses() { return CarburantsRestClasses.classes(); }
+}
+
+// Jersey (jersey) : Jersey's own configuration class
+@ApplicationPath("/api")
+public class JerseyApplication extends ResourceConfig {
+    public JerseyApplication() {
+        registerClasses(CarburantsRestClasses.classes());
+        register(JacksonFeature.class);
+    }
+}
+\end{lstlisting}
+
+Le fichier \code{jboss-deployment-structure.xml} du WAR Jersey est ce qui réalise l'exclusion :
+
+\begin{lstlisting}[language=XML]
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.2">
+  <deployment>
+    <exclude-subsystems><subsystem name="jaxrs"/></exclude-subsystems>
+    <exclusions>
+      <module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
+      <module name="org.jboss.resteasy.resteasy-json-binding-provider"/>
+    </exclusions>
+  </deployment>
+</jboss-deployment-structure>
+\end{lstlisting}
+
+C'est la partie la plus fragile du projet : elle dépend de la façon dont WildFly charge ses modules. Elle a été testée en déployant les deux WAR ensemble, et les deux services répondent (section~\ref{sec:tests}).
+
+\subsection{Les points d'accès}
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lllp{5.4cm}@{}}
+\toprule
+\textbf{Méthode} & \textbf{Chemin} & \textbf{Accès} & \textbf{Rôle}\\
+\midrule
+\code{POST} & \code{/api/auth/login} & public & échange identifiants contre un jeton JWT\\
+\code{GET} & \code{/api/prix?station=\ldots\&date=\ldots} & jeton exigé & prix des carburants de la station à la date\\
+\bottomrule
+\end{tabular}
+\caption{Points d'accès des services REST (identiques sur RESTEasy et sur Jersey).}
+\end{table}
+
+\begin{lstlisting}[language=JavaX]
+@Path("/prix")
+@Secured
+public class PrixResource {
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public PrixStationDto prixCarburants(@QueryParam("station") String station,
+                                         @QueryParam("date") String date) {
+        return ServiceLocator.get(PrixService.class).prixCarburants(station, date);
+    }
+}
+\end{lstlisting}
+
+\subsection{Codes de réponse}
+Les erreurs sont traduites en JSON propre par un gestionnaire d'exceptions : le client reçoit un code HTTP et un message, jamais une trace Java.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}cp{10.5cm}@{}}
+\toprule
+\textbf{Code} & \textbf{Cas}\\
+\midrule
+200 & prix renvoyés (liste vide et message si aucun prix en vigueur)\\
+400 & date invalide, station absente de la requête\\
+401 & jeton manquant, invalide ou expiré ; identifiants incorrects\\
+404 & station inconnue\\
+409 & doublon ou suppression refusée\\
+429 & trop de tentatives de connexion\\
+500 & erreur interne : message générique, la cause reste dans le journal du serveur\\
+\bottomrule
+\end{tabular}
+\caption{Codes de réponse des services REST.}
+\end{table}
+
+\subsection{Résultats}
+La connexion renvoie un jeton, qui est ensuite envoyé dans l'en-tête \code{Authorization: Bearer}. Les figures~\ref{fig:restlogin} à~\ref{fig:rest401} montrent le service RESTEasy ; les figures~\ref{fig:jerseyprix} et~\ref{fig:jersey401} montrent la même séquence sur Jersey.
+
+\fig{10-rest-login-tests.png}{RESTEasy : connexion et jeton obtenu (onglet des tests de la requête de connexion).}{fig:restlogin}
+\fig{11-rest-prix.png}{RESTEasy : prix de la station à une date.}{fig:restprix}
+\fig{12-rest-sans-jeton-401.png}{RESTEasy : la même requête sans jeton est refusée (401).}{fig:rest401}
+\fig{13-jersey-prix.png}{Jersey : prix de la station à une date.}{fig:jerseyprix}
+\fig{14-jersey-sans-jeton-401.png}{Jersey : requête sans jeton refusée (401).}{fig:jersey401}
+
+% ============================================================================
+\section{Les clients}
+% ============================================================================
+\subsection{Clients 1 et 2 : Servlets et JSP appelant le service SOAP}
+L'application \code{client-web} est une application MVC2 (comme à l'atelier 2) : des servlets reçoivent les requêtes, appellent le service SOAP, puis transmettent le résultat à des JSP qui l'affichent. Elle couvre \emph{toutes} les opérations du service : stations, carburants, saisie des prix, et la page de consultation « prix selon la station et la date » (client~2).
+
+Le proxy SOAP est construit à partir du WSDL publié. Le service est créé une fois (il télécharge et analyse le WSDL), mais le \emph{port} est recréé à chaque appel, car un port n'est pas garanti sûr entre threads. L'en-tête \code{Authorization: Basic} est ajouté explicitement sur chaque appel.
+
+La sécurité du client web est centralisée dans un filtre unique :
+\begin{itemize}
+  \item toute page autre que la connexion et les ressources statiques exige une session authentifiée (sinon, redirection vers la connexion) ;
+  \item tout \code{POST} (sauf la connexion) doit porter le jeton \textbf{CSRF} de la session ;
+  \item des en-têtes défensifs sont ajoutés à chaque réponse : \code{Content-Security-Policy} restrictive (\code{default-src 'self'}), \code{X-Content-Type-Options: nosniff}, \code{X-Frame-Options: DENY}.
+\end{itemize}
+
+\fig{15-client-web-connexion.png}{Client web : page de connexion.}{fig:cwlogin}
+\fig{15b-client-web-redirection-connexion.png}{Client web : une page protégée demandée sans session renvoie vers la connexion.}{fig:cwredir}
+\fig{16-client-web-stations.png}{Client web : gestion des stations.}{fig:cwstations}
+\fig{17-client-web-prix.png}{Client web : saisie des prix.}{fig:cwprix}
+
+La page \emph{Consultation} (client~2) appelle \code{prixCarburants}. Trois cas ont été vérifiés : un jour de changement, une date entre deux changements, et une date sans prix.
+
+\fig{18-client-web-consultation.png}{Consultation, jour de changement de prix.}{fig:cons1}
+\fig{18b-client-web-consultation-entre-changements.png}{Consultation, date entre deux changements : l'ancien prix reste en vigueur.}{fig:cons2}
+\fig{18c-client-web-consultation-sans-prix.png}{Consultation, date antérieure au premier prix : message explicite, pas d'erreur.}{fig:cons3}
+
+\subsubsection*{Les erreurs sont affichées proprement}
+Quand le service SOAP refuse une opération, le client affiche le message du service dans la page, sans trace technique. Les quatre cas ci-dessous ont été provoqués volontairement.
+
+\fig{22a-erreur-station-doublon.png}{Erreur affichée : station déjà existante.}{fig:err1}
+\fig{22b-erreur-suppression-refusee.png}{Erreur affichée : suppression d'une station qui a un historique.}{fig:err2}
+\fig{22c-erreur-prix-doublon.png}{Erreur affichée : deuxième prix le même jour pour le même carburant.}{fig:err3}
+\fig{22d-erreur-prix-invalide.png}{Erreur affichée : prix invalide.}{fig:err4}
+
+Les écritures faites depuis le client web ont ensuite été relues directement dans la base :
+
+\fig{21-controle-base.png}{Contrôle direct dans MySQL des données écrites par le client web.}{fig:ctrlbase}
+
+\subsection{Client 3 : classe Java avec \code{main} appelant le JAX-RS}
+\code{PrixRestClient} appelle le service RESTEasy en deux temps : \code{POST /auth/login} pour obtenir un jeton, puis \code{GET /prix} avec l'en-tête \code{Bearer}. Il n'utilise que le client HTTP du JDK (plus Jackson pour le JSON), donc rien de plus à installer.
+
+Deux décisions de conception : le dernier argument est la date et tout ce qui précède forme le nom de la station, ce qui évite de devoir mettre des guillemets autour d'un nom contenant des espaces ; et le mot de passe est lu dans la variable d'environnement \code{CARBURANTS\_API\_PASSWORD}, \textbf{jamais} sur la ligne de commande (où il resterait dans l'historique du terminal).
+
+\begin{lstlisting}[language=JavaX]
+String station = stationFrom(args);          // every argument except the last
+String date    = args[args.length - 1];      // the last one is the date
+PrixRestClient client = new PrixRestClient(baseUrl);
+String token = client.login(user, password);
+System.out.print(format(client.prix(token, station, date)));
+\end{lstlisting}
+
+\fig{19-client-java.png}{Exécution du client Java.}{fig:java}
+
+\subsection{Client 4 : page jQuery appelant Jersey}
+La page \code{jersey.html} appelle le service Jersey avec \code{\$.ajax}. Elle est servie par la même machine et le même port que l'API, donc le navigateur n'a besoin d'aucune configuration CORS. Trois précautions de sécurité s'appliquent : le jeton est gardé dans une \emph{variable JavaScript} uniquement (jamais dans \code{localStorage}, que n'importe quel script de la page pourrait lire) ; toute valeur venant du serveur est insérée avec \code{.text()} et jamais comme HTML (ce qui bloque l'injection de script) ; et la bibliothèque jQuery est servie en local (pas de CDN), ce qui est cohérent avec la politique de sécurité de contenu.
+
+\begin{lstlisting}[language=JS]
+$.ajax({
+  url: API + '/prix',
+  method: 'GET',
+  dataType: 'json',
+  data: { station: $('#station').val(), date: $('#date').val() },
+  headers: { Authorization: 'Bearer ' + token }
+})
+\end{lstlisting}
+
+\fig{20-page-jquery.png}{La page jQuery : prix d'une station obtenus du service Jersey.}{fig:jquery}
+
+% ============================================================================
+\section{Sécurité}\label{sec:securite}
+% ============================================================================
+\subsection{Une technique par besoin}
+Le sujet demande « authentification, JWT, OAuth~2.0 ». Ce sont trois notions de niveaux différents, et le tableau~\ref{tab:secu} indique ce qui est réalisé pour chacune.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}p{2.6cm}p{5.4cm}p{6.8cm}@{}}
+\toprule
+\textbf{Service} & \textbf{Technique} & \textbf{Pourquoi}\\
+\midrule
+JAX-WS (SOAP) & HTTP Basic, vérifié par un filtre servlet devant le point d'accès ; WSDL public & indépendant du moteur SOAP ; fonctionne avec Postman et avec le client Java\\
+JAX-RS et Jersey & \textbf{JWT} : \code{POST /auth/login} donne un jeton, un filtre le vérifie sur \code{/prix} & demandé par le sujet ; pas de session côté serveur\\
+OAuth~2.0 & expliqué ci-dessous, \textbf{non implémenté} & demande un serveur d'autorisation à part (par exemple Keycloak)\\
+\bottomrule
+\end{tabular}
+\caption{Sécurisation des services.}
+\label{tab:secu}
+\end{table}
+
+\subsection{Authentification HTTP Basic (SOAP)}
+Le client envoie \code{Authorization: Basic} suivi de \code{utilisateur:mot\_de\_passe} encodé en Base64. Attention : Base64 \emph{n'est pas un chiffrement}, c'est un simple encodage réversible. Basic n'est acceptable que sur une liaison chiffrée (HTTPS) ; ici, tout tourne en local sur HTTP, ce qui est acceptable pour un atelier mais pas en production.
+
+La requête SOAP sans identifiants est refusée avant même d'atteindre le service :
+
+\fig{08-soap-sans-auth-401.png}{SOAP sans authentification : refus 401.}{fig:soap401}
+
+\subsection{JWT (REST et Jersey)}
+Un \textbf{JSON Web Token} est une chaîne en trois parties séparées par des points : un en-tête (l'algorithme), une charge utile (les \emph{claims} : l'utilisateur \code{sub}, l'émission \code{iat}, l'expiration \code{exp}) et une signature. Le serveur signe l'en-tête et la charge avec une clé secrète (HMAC-SHA256) ; plus tard, il recalcule la signature : si elle correspond, le jeton est authentique et n'a pas été modifié. Le serveur n'a donc rien à mémoriser entre deux requêtes.
+
+La classe \code{JwtService} est écrite avec le seul JDK (aucune bibliothèque tierce), ce qui permet à la même classe de tourner dans les trois WAR et dans les tests sans serveur. Ses garde-fous :
+\begin{itemize}
+  \item l'algorithme est \textbf{imposé} (HS256) et jamais déduit de l'en-tête du jeton : cela bloque l'attaque classique \code{alg=none} et la confusion d'algorithme ;
+  \item la signature est comparée en \emph{temps constant}, pour ne pas révéler d'information par le temps de réponse ;
+  \item l'expiration est vérifiée avec une horloge injectable, donc testable (durée par défaut : 900 secondes) ;
+  \item la clé doit faire au moins 32 octets, sinon la sécurité refuse de s'initialiser.
+\end{itemize}
+
+Autour du jeton :
+\begin{itemize}
+  \item le mot de passe de l'API est haché avec \textbf{PBKDF2} (120\,000 itérations, sel aléatoire) à l'initialisation de la sécurité, qui a lieu au premier appel protégé, et n'est jamais conservé en clair en mémoire ;
+  \item après \textbf{5 échecs} de connexion en 300 secondes, les tentatives suivantes sont refusées avec le code 429 : cela ralentit la devinette de mot de passe ;
+  \item les réponses d'erreur ne contiennent ni requête SQL ni trace de pile ;
+  \item un filtre ajoute aux réponses REST \code{X-Content-Type-Options: nosniff}, \code{Cache-Control: no-store} (ni prix ni jeton en cache) et \code{Referrer-Policy: no-referrer}.
+\end{itemize}
+
+\subsection{OAuth 2.0 : ce que c'est, et pourquoi il n'est pas implémenté}
+\textbf{OAuth~2.0 est un protocole d'\emph{autorisation} déléguée}, pas d'authentification. Il répond à la question : comment une application tierce peut-elle accéder à des données d'un utilisateur \emph{sans connaître son mot de passe} ? Quatre rôles interviennent : le \emph{propriétaire de la ressource} (l'utilisateur), le \emph{client} (l'application qui veut accéder), le \emph{serveur d'autorisation} (qui authentifie l'utilisateur et émet les jetons) et le \emph{serveur de ressources} (l'API, qui accepte les jetons).
+
+Dans le flux le plus courant, \emph{authorization code} (avec PKCE pour les applications publiques) : le client redirige l'utilisateur vers le serveur d'autorisation ; l'utilisateur s'y authentifie et consent ; le serveur renvoie un code temporaire au client ; le client échange ce code contre un \emph{jeton d'accès} (souvent un JWT) qu'il présente ensuite à l'API. Pour la communication de machine à machine, sans utilisateur, le flux \emph{client credentials} est utilisé.
+
+Un JWT n'est donc pas une alternative à OAuth~2.0 : c'est un \emph{format} de jeton que OAuth~2.0 peut utiliser. Ce projet implémente le JWT, mais émis par l'API elle-même.
+
+\begin{vigilance}[Limite assumée]
+Un vrai OAuth~2.0 exige un serveur d'autorisation séparé (par exemple Keycloak), avec sa propre base d'utilisateurs, ses clients enregistrés et ses redirections. Le mettre en place dépasse le périmètre de l'atelier. Il est donc \textbf{expliqué ici et non implémenté} ; ajouter plus tard un tel serveur demanderait aussi de changer la vérification des jetons (clé publique au lieu d'une clé secrète partagée).
+\end{vigilance}
+
+\subsection{Mesures supplémentaires}
+Les mots de passe ne figurent ni dans le code ni dans Git (variables d'environnement). Le client web ajoute la protection CSRF, une politique de sécurité de contenu et le \emph{changement d'identifiant de session} à la connexion (contre la fixation de session). Lors de la connexion, un utilisateur inconnu et un mauvais mot de passe prennent le même temps de calcul, pour ne pas révéler quels noms d'utilisateur existent. Le jeton JWT, côté page jQuery, ne quitte jamais la mémoire de la page.
+
+% ============================================================================
+\section{Tests}\label{sec:tests}
+% ============================================================================
+\subsection{Règles métier : 81 contrôles automatiques, sans serveur}
+Les règles qui n'ont pas besoin de WildFly ni de MySQL (prix en vigueur, validation des saisies, JWT, hachage, parsing de l'en-tête Basic, limitation des tentatives) sont dans des classes sans dépendance et testées par un programme de contrôle. Il se lance avec :
+
+\begin{lstlisting}[language=bash]
+PS C:\dev\jee-webservices-carburants> mvn -q -pl api test-compile exec:java
+\end{lstlisting}
+
+La sortie se termine par le total des contrôles et le nombre d'échecs : \code{TOTAL CHECKS: 81   FAILURES: 0}. Les contrôles couvrent notamment les cas du tableau~\ref{tab:vigueur}, l'ordre des carburants, la robustesse du jeton (expiration à la seconde près, guillemet ou barre oblique inverse dans le nom d'utilisateur) et le hachage (deux hachages d'un même mot de passe diffèrent grâce au sel).
+
+\fig{02-controles-logique.png}{Les contrôles automatiques de la logique métier.}{fig:controles}
+
+\begin{vigilance}[Un défaut trouvé par ces contrôles]
+Les contrôles ont révélé un vrai défaut de \code{JwtService} : un nom d'utilisateur contenant un guillemet (\code{a"b}) produisait un jeton impossible à relire, parce que l'expression régulière qui extrait \code{sub} s'arrêtait au premier guillemet. Elle accepte désormais les séquences d'échappement. Sans ce test, le défaut serait resté invisible, car personne ne se connecte avec un tel nom en usage normal.
+\end{vigilance}
+
+\subsection{Postman}
+La collection Postman est organisée en trois dossiers : \textbf{JAX-WS} (huit requêtes SOAP, S1 à S8), \textbf{JAX-RS (RESTEasy)} et \textbf{Jersey}. Les deux dossiers REST ont la même structure, sept requêtes et \textbf{12 assertions automatiques} chacun : connexion avec mémorisation du jeton (2), prix un jour de changement (3), prix entre deux changements (2), aucune donnée avant la date (2), station inconnue (1), date invalide (1) et appel sans jeton (1).
+
+Les requêtes SOAP sont, elles, des requêtes XML sans assertion automatique : leur résultat a été contrôlé à la lecture des réponses (figures~\ref{fig:soapprix} à~\ref{fig:soapsuppr}).
+
+Le \emph{Runner} de Postman exécute chaque dossier d'un coup et affiche le bilan des assertions :
+
+\fig{23a-postman-runner-resteasy.png}{Postman Runner : dossier RESTEasy.}{fig:runner1}
+\fig{23b-postman-runner-jersey.png}{Postman Runner : dossier Jersey.}{fig:runner2}
+
+Comme les deux services partagent le code des ressources et ne diffèrent que par le moteur, obtenir le même résultat sur les deux est précisément ce qui prouve que le moteur Jersey fonctionne bien en place de RESTEasy dans le deuxième WAR.
+
+\subsection{Synthèse}
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}p{4.6cm}p{5.4cm}p{4.6cm}@{}}
+\toprule
+\textbf{Ce qui est testé} & \textbf{Comment} & \textbf{Preuve}\\
+\midrule
+Règles métier, JWT, hachage & 81 contrôles sans serveur & fig.~\ref{fig:controles}\\
+Service SOAP & requêtes Postman S1 à S8 & fig.~\ref{fig:soapprix} à~\ref{fig:soapsuppr}, \ref{fig:soap401}\\
+Service RESTEasy & 12 assertions Postman & fig.~\ref{fig:restlogin} à~\ref{fig:rest401}, \ref{fig:runner1}\\
+Service Jersey & 12 assertions Postman & fig.~\ref{fig:jerseyprix}, \ref{fig:jersey401}, \ref{fig:runner2}\\
+Client web & parcours manuel, erreurs provoquées & fig.~\ref{fig:cwlogin} à~\ref{fig:ctrlbase}\\
+Client Java & exécution en ligne de commande & fig.~\ref{fig:java}\\
+Page jQuery & exécution dans le navigateur & fig.~\ref{fig:jquery}\\
+\bottomrule
+\end{tabular}
+\caption{Récapitulatif des tests.}
+\end{table}
+
+% ============================================================================
+\section{Incidents rencontrés}
+% ============================================================================
+Cette section liste les problèmes réellement rencontrés pendant l'installation et les tests, parce qu'ils illustrent ce qu'il faut savoir pour reproduire le projet.
+
+\begin{description}[leftmargin=0pt,labelsep=0.6em,style=nextline]
+  \item[Redirection \code{<} refusée par PowerShell.] La commande \code{mysql -u root -p < db\textbackslash create-database.sql} échoue dans PowerShell (« l'opérateur \code{<} est réservé »). Cause : PowerShell n'a pas la redirection d'entrée de \code{cmd}. Solution : \code{mysql -u root -p -e "source db/create-database.sql"}, qui fait lire le fichier par MySQL lui-même.
+  \item[« Unable to connect to the remote server ».] Après la fermeture des deux terminaux, une requête vers le service échouait. Cause : WildFly était lancé \emph{dans} le premier terminal ; le fermer arrête le serveur. Solution : relancer le serveur et garder les terminaux ouverts pendant les tests.
+  \item[Variables Postman introuvables.] L'onglet \emph{Variables} n'est pas dans la requête mais dans les réglages de la \emph{collection}. Les adresses (\code{restUrl}, \code{jerseyUrl}) et les identifiants s'y définissent une fois pour toutes les requêtes.
+  \item[Choix de la version de WildFly.] Une première version du guide visait WildFly~30. Les versions récentes (40 et plus) passent à Jakarta EE~11, ce qui aurait obligé à migrer le code. La variante \emph{EE10 Distribution} de WildFly~41 a été retenue (section~\ref{sec:wildfly}).
+  \item[Défaut du JWT.] Trouvé par les contrôles automatiques, décrit en section~\ref{sec:tests}.
+\end{description}
+
+% ============================================================================
+\section{Gestion de version}
+% ============================================================================
+Le projet est versionné dans un dépôt Git public. L'historique est découpé \emph{par couche}, de façon à raconter la construction : initialisation du projet Maven et du script SQL, puis le contrat et les règles (\code{api}), la persistance (\code{core}), le service SOAP, les deux services REST, les clients, les tests, la documentation, et enfin le rapport.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Préfixe} & \textbf{Usage}\\
+\midrule
+\code{chore:} & initialisation, configuration\\
+\code{feat(\ldots):} & une fonctionnalité, avec la couche entre parenthèses\\
+\code{test:} & tests et collection Postman\\
+\code{docs:} & documentation et rapport\\
+\bottomrule
+\end{tabular}
+\caption{Convention des messages de commit.}
+\end{table}
+
+Le fichier \code{.gitignore} exclut les répertoires de construction (\code{target/}), les fichiers d'IDE et les fichiers temporaires de LaTeX. Avant la publication, une recherche automatique de motifs de secrets a été faite sur les sources : elle ne remonte que des \emph{noms} de variables d'environnement et une clé factice utilisée par les tests.
+
+Le dépôt est disponible à l'adresse \texttt{github.com/ouhaddousara/jee-webservices-carburants}.
+
+% ============================================================================
+\section{Limites}\label{sec:limites}
+% ============================================================================
+\begin{itemize}
+  \item \textbf{Un seul utilisateur d'API.} Il n'y a pas de gestion d'utilisateurs ni de rôles ; tout utilisateur authentifié peut tout faire.
+  \item \textbf{OAuth~2.0 n'est pas implémenté}, seulement expliqué (voir la section~\ref{sec:securite}).
+  \item \textbf{HTTP et non HTTPS.} Tout est en local sur HTTP. En production, TLS est indispensable, en particulier pour Basic.
+  \item \textbf{Blocage des connexions en mémoire.} Le compteur d'échecs est propre à chaque application et à chaque JVM ; un déploiement en grappe demanderait un stockage partagé.
+  \item \textbf{Prix en vigueur calculé en Java.} Il est résolu à partir des lignes d'historique jusqu'à la date demandée ; pour un historique très long, une requête SQL dédiée serait préférable.
+  \item \textbf{Variante EE10 de WildFly temporaire}, abandonnée à partir de WildFly~42 : une migration vers Jakarta EE~11 (Jersey~4) serait nécessaire pour un projet à long terme.
+  \item \textbf{Requêtes SOAP sans assertion automatique} : seules les requêtes REST ont des tests Postman automatisés.
+  \item \textbf{Captures non prises.} Certaines captures facultatives (liste des carburants du client web, étapes intermédiaires de la page jQuery) n'ont pas été prises ; le texte correspondant décrit alors le comportement d'après le code, et non d'après une capture.
+\end{itemize}
+
+% ============================================================================
+\section{Conclusion}
+% ============================================================================
+Cet atelier a produit un service SOAP et deux services REST qui exposent la même méthode, le prix des carburants d'une station à une date, appelés par quatre clients de natures différentes. Plusieurs choix de conception ont structuré le travail : traduire la classe d'association en entité avec une contrainte d'unicité qui exprime la règle du prix journalier ; définir précisément ce que veut dire « prix à une date » et l'isoler dans une classe testable sans base ; et écrire les ressources REST une seule fois pour les faire tourner sur deux moteurs, RESTEasy et Jersey.
+
+Sur le plan de la sécurité, le projet combine Basic pour SOAP et JWT pour REST, avec des garde-fous concrets (algorithme imposé, comparaison en temps constant, hachage PBKDF2, limitation des tentatives, secrets hors du dépôt). OAuth~2.0 reste une explication : il demanderait un serveur d'autorisation que l'atelier ne prévoit pas.
+
+Le principal enseignement est méthodologique : tester la logique métier \emph{sans serveur} a permis de trouver un défaut du JWT en quelques secondes, alors que les tests de bout en bout ne l'auraient jamais révélé.
+
+% ============================================================================
+\appendix
+\section{Annexe : exécuter le projet}
+% ============================================================================
+Les commandes sont données pour PowerShell, depuis la racine du projet.
+
+\begin{lstlisting}[language=bash]
+PS C:\dev\jee-webservices-carburants> mysql -u root -p -e "source db/create-database.sql"
+PS C:\dev\jee-webservices-carburants> mvn -q clean install
+PS C:\dev\jee-webservices-carburants> .\config\start-wildfly.ps1       # terminal 1
+PS C:\dev\jee-webservices-carburants> .\config\setup-datasource.ps1    # terminal 2, once
+PS C:\dev\jee-webservices-carburants> .\config\deploy.ps1
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Composant} & \textbf{Adresse (port HTTP 8081)}\\
+\midrule
+WSDL SOAP & \code{/carburants-soap/CarburantsService?wsdl}\\
+Service RESTEasy & \code{/carburants-rest/api}\\
+Service Jersey & \code{/carburants-jersey/api}\\
+Client web & \code{/client-web/}\\
+Page jQuery & \code{/client-web/jersey.html}\\
+\bottomrule
+\end{tabular}
+\caption{Adresses des composants déployés.}
+\end{table}
+
+\end{document}
